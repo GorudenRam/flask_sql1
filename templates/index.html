@@ -9,19 +9,24 @@
 <h2>Action # {{ job.id }}</h2>
     <table class="table">
         <tr>
-            <th>Title of activity</th>
-            <th>Team leader</th>
-            <th>Duration</th>
-            <th>List of collaborators</th>
-            <th>Is finished</th>
+            <th style="background-color: #999">Title of activity</th>
+            <th style="background-color: #999">Team leader</th>
+            <th style="background-color: #999">Duration</th>
+            <th style="background-color: #999">List of collaborators</th>
+            <th style="background-color: #999">Is finished</th>
         </tr>
         <tr>
-            <th>{{job.job}}</th>
-            <th>{{job.team_leader}}</th>
-            <th>{{job.duration}}</th>
-            <th>{{job.collaborators}}</th>
-            <th>{{job.is_finished}}</th>
+            <td style="background-color: #AAD">{{job.job}}</td>
+            <td style="background-color: #AAD">{{job.team_leader}}</td>
+            <td style="background-color: #AAD">{{job.duration}}</td>
+            <td style="background-color: #AAD">{{job.collaborators}}</td>
+            {% if job.is_finished %}
+            <td style="background-color: #9D9">{{job.is_finished}}</td>
+            {% else %}
+            <td style="background-color: #E55">{{job.is_finished}}</td>
+            {% endif %}
         </tr>
+        </table>
         {% if current_user.is_authenticated and current_user.id == job.team_leader or current_user.id == 1 %}
             <div>
                 <a href="/jobs/{{job.id}}" class="btn btn-warning">
@@ -32,6 +37,5 @@
                 </a>
             </div>
         {% endif %}
-        </table>
     {% endfor %}
 {% endblock %}
