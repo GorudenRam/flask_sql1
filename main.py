@@ -24,8 +24,8 @@ def load_user(user_id):
 def index():
     db_sess = db_session.create_session()
     jobs = db_sess.query(Job)
-    print(jobs)
-    return render_template("jobs.html", jobs=jobs)
+
+    return render_template("index.html", jobs=jobs)
 
 
 @app.route('/register', methods=['GET', 'POST'])
