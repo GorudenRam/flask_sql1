@@ -26,7 +26,7 @@ def index():
     db_sess = db_session.create_session()
     jobs = db_sess.query(Job)
 
-    return render_template("index.html", jobs=jobs)
+    return render_template("index.html", jobs=jobs, current_user=current_user)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -84,15 +84,14 @@ def add_job():
     return render_template('job.html', title='Добавление работы', form=form)
 
 
-@app.route('/news/<int:id>', methods=['GET', 'POST'])
+@app.route('/jobs/<int:id>', methods=['GET', 'POST'])
 @login_required
-def edit_news(id):
+def edit_job(id):
     form = JobForm()
     if request.method == "GET":
         db_sess = db_session.create_session()
         job = db_sess.query(Job).filter(Job.id == id,
-                                          Job.team_leader == current_user
-                                          ).first()
+                                        ((Job.team_leader == current_user.id) | (current_user.id == 1))).first()
         if job:
             form.job.data = job.job
             form.team_leader.data = job.team_leader
@@ -104,8 +103,7 @@ def edit_news(id):
     if form.validate_on_submit():
         db_sess = db_session.create_session()
         job = db_sess.query(Job).filter(Job.id == id,
-                                          Job.team_leader == current_user
-                                          ).first()
+                                        Job.team_leader == current_user).first()
         if job:
             job.job = form.job.data
             job.team_leader = form.team_leader.data
@@ -117,8 +115,22 @@ def edit_news(id):
         else:
             abort(404)
     return render_template('job.html',
-                           title='Редактирование новости',
-                           form=form
+                           title='Редактирование работы',
+                           form=form)
+
+
+@app.route('/job_delete/<int:id>', methods=['GET', 'POST'])
+@login_required
+def job_delete(id):
+    db_sess = db_session.create_session()
+    job = db_sess.query(Job).filter(Job.id == id,
+                                    ((Job.team_leader == current_user.id) | (current_user.id == 1))).first()
+    if job:
+        db_sess.delete(job)
+        db_sess.commit()
+    else:
+        abort(404)
+    return redirect('/')
 
 
 @app.route('/login', methods=['GET', 'POST'])
